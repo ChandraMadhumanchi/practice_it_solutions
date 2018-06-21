@@ -1,0 +1,49 @@
+Scala : We use a few transformations to build a dataset of (String, Int) pairs called counts and then save it to file.
+======>
+
+val textFile = sc.textFile("hdfs://...");
+
+val counts = textFile.flatMap(line => line.split(""))
+					 .map(word => (word ,1))
+					 .reduceByKey(_+_)
+counts.saveAsTextFile("hdfs://..")
+
+Scala : Search the error
+=====>
+
+val textFile = sc.textFile("hdfs://...")
+
+// Create a DataFrame having a single column named "line"
+
+val df = textFile.toDF("line")
+val errors = df.filter(col("line").like("%ERROR%"))
+//Count all the errors
+errors.count()
+
+Simple Data Operations
+======================
+// Create a DataFrame based on a named "people"
+// stored in a MySQL database.
+
+val url = "jdbc:mysql://yourIP:yourPort/test?user=yourUsername;password=yourPassword"
+
+val df = sqlContext
+	.read
+	.format("jdbc")
+	.option("url",url)
+	.option("dbtable","people")
+	.load()
+	
+// print schema
+
+df.printSchema()
+
+val countByAge = df.groupBy("age").count()
+countsByAge.show()
+
+// Saves countsByAge to s3 in the JSON format.
+countsByAge.write.format("json").save("s3a://...")
+ 
+
+
+
